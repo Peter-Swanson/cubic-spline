@@ -46,7 +46,7 @@
 
 \maketitle  %command to create title
 %\renewcommand\thesubsection{\alph{subsection}} %letter subsections
-% \tableofcontents
+\tableofcontents
 
 \section{Summary}
 
@@ -60,7 +60,7 @@ BIBINPUTS=getwd(),
 BSTINPUTS=getwd())
 @
 
-In general, a \textbf{spline} is defined as a degree $d$ piecewise polynomial whose function values and first $d-1$ derivatives agree at the points where they join (knots) \cite{hastie2011elements, smith1979splines, devlin1986spline, james2013introduction, harrell2015regression}. Splines are used to fit non-linear relationships between $X$ and $Y$ and are:
+In general, a \textbf{spline} is defined as a degree $d$ piecewise polynomial whose function values and first $d-1$ derivatives agree at the points where they join (knots) \cite{hastie2011elements, smith1979splines, devlin1986spline, james2013introduction, harrell2015regression}. In a regression setting, splines are used to fit non-linear relationships between $X$ and $Y$ and are:
 
 \begin{enumerate}
 \item Piecewise functions - divide the range of $X$ into $K+1$ separate regions using knots $\xi_j$ for $j=1,\dots,K$
@@ -68,9 +68,9 @@ In general, a \textbf{spline} is defined as a degree $d$ piecewise polynomial wh
 \item Constrained functions - constrain the function $f(X)$ to meet at each knot $\xi_j$ and make the function smooth at the knots by requiring the first $d-1$ derivatives to be continuous
 \end{enumerate}
 
-Cubic splines (degree $d=3$) are often preferred because they are the lowest order spline where the human eye cannot identify the knot discontinuity. The splines described above are sometimes called \textbf{unrestricted cubic splines} to differentiate them from restricted or \textbf{natural cubic splines} which include the additional constraint that the function be linear before the first and after the last knots (called ```boundary knots") \cite{hastie2011elements}. 
+Cubic splines (degree $d=3$) are often preferred because they are the lowest order spline where the human eye cannot identify the knot discontinuity. The splines described above are sometimes called \textbf{unrestricted cubic splines} to differentiate them from restricted or \textbf{natural cubic splines} which include the additional constraint that the function be linear before the first and after the last knots (called \textbf{boundary knots}) \cite{hastie2011elements}. 
 
-Splines have been used in agriculture, economics, pharmacokinetics, physics, meteorology, and nuclear materials research for over 30 years \cite{eubank1984approximate}. The use of cubic splines is also a common practice in default and prepayment modeling \cite{bajari2008empirical, Dunsky2014, dunsky2007valuing}. For survival analysis models, since the time dimension is typically non-linear, it is often modeled using cubic splines \cite{allison2010survival, heinzl1997gaining, rutherford2015use}.
+Splines have been used in agriculture, economics, pharmacokinetics, physics, meteorology, and nuclear materials research for over 30 years \cite{eubank1984approximate}. The use of cubic splines is also a common practice in credit default and prepayment modeling \cite{bajari2008empirical, Dunsky2014, dunsky2007valuing}. For hazard models, since the effect of time is typically non-linear, it is often modeled using cubic splines \cite{allison2010survival, heinzl1997gaining, rutherford2015use}.
 
 The methods described below are sometimes called \textbf{fixed knot regression splines} because we represent a fixed number of knots with a set of basis functions. These basis functions can be included as inputs to any generalized linear model (GLM) without violation of model assumptions. \textbf{Smoothing splines} are an alternative to fixed knot splines, but they cannot be included directly in a GLM \cite{james2013introduction}. Instead, smoothing splines must be fit with Generalized Additive Models (GAM) using backfitting algorithms \cite{hastie1990generalized}. A smoothing spline is a natural cubic spline with knots at every point $x_i$ A tuning parameter $\lambda$ is used to increase the smoothness of the function to avoid overfitting.
 
@@ -81,7 +81,7 @@ With linear regression, we fit the model
 \begin{equation}
 f(X) = X \beta = \beta_0 + \beta_1 X \label{simpLinMod}
 \end{equation}
-where $f(X)$ is linear in the coefficient vector, $\beta$. This works well if $Y$ is linear in $X$ as in the left hand plot in Figure \ref{linear01}. This model works less well when $Y$ is not linear in $X$ as in the right plot in Figure \ref{linear01}. The plot in Figure \ref{linear01} is an extreme example, however, in most cases $f(X)$ is nonlinear in $X$ and linear regression is a sometimes necessary simplification \cite{james2013introduction}. This is especially true when the number of observations, $n$, is small or the number of predictors, $p$ is large. If the relationship between $X$ and $Y$ is not linear, then the linear model in \ref{simpLinMod} will not be able to accurately capture that relationship. 
+where $f(X)$ is linear in the coefficient vector, $\beta$. This works well if $Y$ is linear in $X$ as in the left hand plot in Figure \ref{linear01}. This model works less well when $Y$ is not linear in $X$ as in the right-hand plot in Figure \ref{linear01}. The right-hand plot in Figure \ref{linear01} is an extreme example, however, in most cases $f(X)$ is nonlinear in $X$ and linear regression is a sometimes necessary simplification \cite{james2013introduction}. This is especially true when the number of observations, $n$, is small or the number of predictors, $p$ is large. If the relationship between $X$ and $Y$ is not linear, then the linear model in \ref{simpLinMod} will not be able to accurately capture that relationship. 
 
 <<>>=
 set.seed(8675309)
@@ -108,9 +108,9 @@ lines(c,fit2$fitted, col="red")
 \end{figure}
 
 
-The important thing here is that the linear model in \ref{simpLinMod} imposes a linear relationship. It is linear in the coefficients, $\beta$, not necessarily in $X$. So if $X$ does not have a linear relationship with $Y$, we would be violating a basic model assumption to use \ref{simpLinMod} to fit the relationship between $X$ and $Y$.
+The linear model in (\ref{simpLinMod}) imposes a linear relationship, however, it is linear in the coefficients, $\beta$, not necessarily in $X$. So if $X$ does not have a linear relationship with $Y$, we would be violating a basic model assumption to use (\ref{simpLinMod}) to fit the relationship between $X$ and $Y$.
 
-In the case where $Y$ is not linear in $X$, we have a few options to fit the observed data. There are more complicated non-linear models (ie GAM, MARS, Neural Networks, tree-based methods...), and it is sometimes possible to transform $Y$ to make a model linear (ie $\log(Y))$), however, in most cases, if we want to stick with standard generalized linear models, we have a few options:
+In the case where $Y$ is not linear in $X$, we have a few options to fit the observed data. There are more complicated non-linear models (ie GAM, MARS, Neural Networks, tree-based methods...), and it is sometimes possible to transform $Y$ to make a model linear (ie $\log(Y))$), however, in most cases, if we want to stick with standard generalized linear models, we have a few options for treating $X$:
 
 \begin{enumerate}
 \item Transform $X$ ($\log(X)$, polynomials, interactions, ...)
@@ -134,10 +134,10 @@ The advantage of basis functions is that once they are established, we can use t
 \item $h_m(X)=X^m$, for $m={0,1,2,\dots,M}$ gives a polynomial basis
 \item $h_m(X)=I(L_m \le X < U_m)$ gives an indicator for $X$ within a range. This is used in a piecewise constant basis representation
 \end{itemize}
-Other basis functions include wavelets, forier series, and regression splines. Note that these basis functions are fixed and known. 
+Other basis functions include wavelets, Forier series, and regression splines. Note that these basis functions are fixed and known. 
 
 \subsection{Truncated Power Series vs B-Spline}
-Bases can often be expressed in different ways. For example, a polynomial basis may be represented equally by an orthogonal polynomial basis. For splines, the two most popular options are truncated power series and B-spline bases. A B-spline basis is more computationally efficient and numerically stable than a Truncated Power basis \cite{sleeper1990regression, hastie2011elements}. Unfortunately, B-splines do not allow for extrapolation beyond the boundary knots \cite{harrell2015regression} and since B-splines depend on the observed values of $x$, care needs to be taken when applying functions in software packages \cite{venables2013modern}. On the other hand, an adjustment can be made to the truncated power basis to improve numerical stability and as long as modern statistical software is used (ie QR decomposition for matrix inversion), estimation is no longer a problem \cite{harrell2015regression}.  Finally, the truncated power series is much easier to understand, represent algebraically, and implement. The coefficient estimates will be different depending on the basis, but since they span the same space, the final model predictions will be the same. These notes stick to truncated power bases except to show how they are equivalent to B-splines for prediction.
+Bases can often be expressed in different ways. For example, a simple polynomial basis may be represented equally by an orthogonal polynomial basis. For splines, the two most popular options are truncated power series and B-spline bases. A B-spline basis is more computationally efficient and numerically stable than a Truncated Power basis \cite{sleeper1990regression, hastie2011elements}. Unfortunately, B-splines do not allow for extrapolation beyond the boundary knots \cite{harrell2015regression} and since B-splines depend on the observed values of $x$, care needs to be taken when applying functions in software packages \cite{venables2013modern}. On the other hand, an adjustment can be made to the truncated power basis to improve numerical stability and as long as modern statistical software is used (ie QR decomposition for matrix inversion), estimation is no longer a problem \cite{harrell2015regression}.  Finally, the truncated power series is much easier to understand, represent algebraically, and implement. The coefficient estimates will be different depending on the basis, but since they span the same space, the final model predictions will be the same. These notes stick to truncated power bases except to show how they are equivalent to B-splines for prediction.
 
 \section{Regression With Basis Functions}
 The next section demonstrates the basis function approach to fitting non-linear relationships. The code below simulates data from a non-linear model, $x$ and $y$. We then take limited subset $(5<=x<=22)$, so we can observe what happens when we extrapolate the model beyond the range of its training data.
@@ -158,12 +158,17 @@ x = xExt[limRange]
 y = yExt[limRange]
 @
 
+\begin{figure}[h]	%Figure 
+\begin{center}
 <<test2, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
 plot(xExt,yExt, ylab="Y", xlab="X")
 abline(v=5)
 abline(v=22)
 @
-
+\caption{Data simulated from $Y = 0.2X^2(1+\sin(X))$}
+\label{simdata01}
+\end{center}
+\end{figure}
 
 \subsection{Global Polynomials}
 A common method used to fit nonlinear data is to use polynomials. A degree $d$ polynomial can be represented by
@@ -185,7 +190,7 @@ fit3 = lm(y~poly(x,3))       # fit3 - degree 3 global polynomial
 fit4 = lm(y~poly(x,9))       # fit4 - degree 9 global polynomial
 @
 
-Code below produces the plots of the polynomials. The plot on the left shows the fit in the training sample. We have to use a high-degree polynomial to fit this curve well. In general, we don't go beyond degree 3 or 4 because the curve can become too flexible and take on strange shapes \cite{james2013introduction}. Also keep in mind the bias-variance tradoff:
+Figure \ref{polynomial01} shows the models fit to different degrees of polynomials. The plot on the left shows the fit in the training sample. We have to use a high-degree polynomial to fit this curve well. In general, we don't go beyond degree 3 or 4 because the curve can become too flexible and take on strange shapes, especially in the tails \cite{james2013introduction}. Also keep in mind the bias-variance tradoff:
 
 \begin{equation}
 \uparrow \text{Flexibility}  \quad = \quad \uparrow \text{Variance} \quad = \quad \downarrow \text{Bias}
@@ -193,6 +198,8 @@ Code below produces the plots of the polynomials. The plot on the left shows the
 
 It is possible to find an arbitrarily good fit to the training sample by increasing $d$. Of course, this will lead to overfitting and a poor estimate of the ``true" model. 
 
+\begin{figure}[h]	%Figure 
+\begin{center}
 <<test3, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
 par(mfrow=c(1,2))
 plot(x,y, main="Global Polynomial")
@@ -210,6 +217,10 @@ plot(xExt, yExt, ylim= c(-500,500), main="Global Polynomial (Extrapolated)")
 lines(x=xExt, y=fit3ext, col="green", lwd=2)
 lines(x=xExt, y=fit4ext, col="purple", lwd=2)
 @
+\caption{Data fit using orthogonal polynomial bases}
+\label{polynomial01}
+\end{center}
+\end{figure}
 
 \subsection{Piecewise Constant}
 Another approach would be to fit a piecewise constant model. This is equivalent to binning a continuous variable resulting in a categorical variable. We begin by specifying some knots $\xi_j$ for $j=1,\dots,K$. Assume for now we have some a priori theory that suggests we place knots in this data at $X=14$ and $X=17$. Two knots breaks the domain into three regions which can be represented by three basis functions:
@@ -218,7 +229,7 @@ h_1(X) = I(X<\xi_1), \quad h_2(X) = I(\xi_1 \le X < \xi_2), \quad h_3(X) = I(\xi
 \end{equation}
 Fitting the model without an intercept
 $$ f(x) = \beta_1 h_1(X) + \beta_2 h_2(X) + \beta_3 h_3(X) $$
-will give $\hat{\beta}_m = \bar{Y}_m$. The OLS coefficient estimates will be equal to the mean of $y$ over each disjoin region. Equivalently, we could fit a model with an intercept and 2 of the 3 basis functions. This is a more traditional approach to fitting binned variables using dummy coding.
+will give $\hat{\beta}_m = \bar{Y}_m$. The OLS coefficient estimates will be equal to the mean of $y$ over each disjoin region. Equivalently, we could fit a model with an intercept and 2 of the 3 basis functions. This is a more traditional approach to fitting binned variables using dummy coding. Results can be seen in Figure \ref{piecewise_constant}.
 
 
 <<>>=
@@ -231,6 +242,9 @@ i3 = 1*(k[2]<=x)
 fit5 = lm(y ~ 0 + i1 + i2 + i3)      # fit5 = piecewise constant
 @
 
+
+\begin{figure}[h]	%Figure 
+\begin{center}
 <<test4, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
 par(mfrow=c(1,1))                    #plots
 plot(x,y, main="Piecewise Constant")
@@ -238,6 +252,10 @@ lines(x=x, y=fit5$fitted, col="red", lwd=2)
 abline(v=k[1], lwd=5)
 abline(v=k[2], lwd=5)
 @
+\caption{Data fit using piecewise constant with 2 knots}
+\label{piecewise_constant}
+\end{center}
+\end{figure}
 
 \subsection{Piecewise Linear (+ constraints)}
 A natural extension of the piecewise constant model is to fit a linear term in each of the segments separated by the knots. This is accomplished by adding three new basis functions giving us the piecewise linear basis:
@@ -248,7 +266,7 @@ $$ h_4(X) = I(X<\xi_1)X, \quad h_5(X) = I(\xi_1 \le X < \xi_2)X, \quad h_6(X) = 
 fit6 = lm(y ~ 0 + i1 + i2 + i3 + I(i1*x) + I(i2*x) + I(i3*x))  # fit6 = piecewise linear
 @
 
-This can be seen in the left hand plot below. While an apparent improvement over the Piecewise Constant, we now have this strange situation where the prediction jumps at the knots. With the Piecewise Constant approach, there was nothing we could do, however, with the Piecewise Linear model, its possible to re-express the basis incorporating constraints. Here we want to constrain the function to meet at the knots. So we want a basis that will force
+This can be seen in the left hand plot in Figure \ref{constrained_piecewise_constant}.  While an apparent improvement over the Piecewise Constant, we now have this strange situation where the prediction jumps at the knots. With the Piecewise Constant approach, there was nothing we could do, however, with the Piecewise Linear model, its possible to re-express the basis incorporating constraints. Here we want to constrain the function to meet at the knots. So we want a basis that will force
 $$ \lim_{X \rightarrow \xi+} f(x) = \lim_{X \rightarrow \xi-} f(x) = f(\xi)$$
 and this can be accomplished by using truncated power series basis functions of the form
 \[
@@ -262,7 +280,7 @@ Note that a linear function is a degree $d=1$ polynomial. So for a Piecewise Lin
 \begin{equation}
 h_1(X) = 1, \quad h_2(X) = X, \quad h_3(X) = (X-\xi_1)_+, \quad h_4(X) = (X-\xi_2)_+ \label{cplbasis}
 \end{equation}
-Begin with a linear function of $X$ and add another linear function of $X$ at each knot with the requirement that each piece meet at the knots. This can be seen in the right hand plot below.
+Begin with a linear function of $X$ and add another linear function of $X$ at each knot with the requirement that each piece meet at the knots. This can be seen in the right hand plot in figure \ref{constrained_piecewise_constant}.
 
 <<>>=
 # use truncated power basis functions to constrain f(x) at knots
@@ -273,6 +291,8 @@ fit7 = lm(y ~ x + tpb1 + tpb2)      # fit7 = piecewise linear w/ constrained k
 
 @
 
+\begin{figure}[h]	%Figure 
+\begin{center}
 <<test5, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
 par(mfrow=c(1,2))
 par(mfrow=c(1,2))
@@ -285,6 +305,10 @@ lines(x=x, y=fit7$fitted, col="red", lwd=2)
 abline(v=k[1], lwd=4)
 abline(v=k[2], lwd=4)
 @
+\caption{Data fit using constrained piecewise constant with 2 knots}
+\label{constrained_piecewise_constant}
+\end{center}
+\end{figure}
 
 \section{Cubic Spline Regression}
 Splines are generally defined as degree $d$ piecewise polynomial functions where the first $d-1$ derivatives are constrained to be continuous \cite{devlin1986spline, smith1979splines}. For a cubic spline this basically means we need constraints that ensure that the first and second derivatives are equal in the limits.
@@ -292,15 +316,15 @@ $$ \lim_{x \rightarrow \xi-} f^{''}(x) = \lim_{x \rightarrow \xi+} f^{''}(x)= f(
 
 %% unrestricted cubic splines
 \subsection{Unrestricted Cubic Spline}
-The {\bf unrestricted cubic spline} basis follows naturally from the constrained piecewise linear function in \ref{cplbasis}
+The {\bf unrestricted cubic spline} basis follows naturally from the constrained piecewise linear function in (\ref{cplbasis})
 \begin{equation} h_1(X)=1, \quad h_2(X)=X, \quad h_3(X)=X^2, \quad h_4(X)=X^3, \quad
 h_5(X) = (X-\xi_1)^3_+, \quad h_6(X) = (X-\xi_2)^3_+ \label{unrestrictedSpline}
 \end{equation}
 Cubic splines are said to be the lowest degree splines where the human eye cannot detect the discontinuities at the knots \cite{hastie2011elements}. 
 
-The code below fits the unrestricted cubic splines in two ways. \texttt{fit8} uses the truncated power basis described in \ref{unrestrictedSpline}, and \texttt{fit9} uses a B-spline basis representation. Note that both have the same number of parameters to estimate, but that the coefficients are vastly different. This isn't a problem, though, because the bases span the same space and this is evidenced by the fact that both the truncated power series and the B-spline basis yield the same predictions (see graphs below.)
+The code below fits the unrestricted cubic splines in two ways. \texttt{fit8} uses the truncated power basis described in (\ref{unrestrictedSpline}), and \texttt{fit9} uses a B-spline basis representation. Note that both have the same number of parameters to estimate, but that the coefficients are vastly different. This isn't a problem, though, because the bases span the same space and this is evidenced by the fact that both the truncated power series and the B-spline basis yield the same predictions (see graphs below.)
 
-<<>>=
+<< warning=FALSE, message=FALSE>>=
 ctpb1 = (k[1]<x)*(x-k[1])^3
 ctpb2 = (k[2]<x)*(x-k[2])^3
 
@@ -310,8 +334,19 @@ fit9 = lm(y~ bs(x, k=k))                  # unrestricted cubic spline (B-splines
 summary(fit9)$coef
 @
 
-This basis is ``unrestricted" in the sense that it does not impose additional constraints after the first and last knots. This can be a limitation because just as polynomials can behave badly in the tails, a piecewise polynomial can also behave badly in the tails. This can be seen by the graph in the right below.
+This basis is ``unrestricted" in the sense that it does not impose additional constraints after the first and last knots. This can be a limitation because just as polynomials can behave badly in the tails, a piecewise polynomial can also behave badly in the tails. This can be seen in the right-hand plot of \ref{unrestricted_csb}.
 
+<<echo=FALSE>>=
+# fit new data outside bounds (B-spline basis)
+# expanding w/ try with truncated power basis
+ctpb1ext = (k[1]<xExt)*(xExt-k[1])^3
+ctpb2ext = (k[2]<xExt)*(xExt-k[2])^3
+fit8ext = predict(fit8, data.frame(x=xExt, ctpb1=ctpb1ext, ctpb2=ctpb2ext))   # knots beyond boundaries cause ill conditioned bases
+fit9ext = predict(fit9, data.frame(x=xExt))  # 
+@
+
+\begin{figure}[h]	%Figure 
+\begin{center}
 <<test6, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
   par(mfrow=c(1,2))
 plot(x,y, main="Unrestricted Cubic Spline")
@@ -321,12 +356,6 @@ abline(v=k[1], lwd=3)
 abline(v=k[2], lwd=3)
 legend("topleft", lwd=2, col=c("red", "blue"),
        legend=c("Truncated Power Series","B-Spline"))
-# fit new data outside bounds (B-spline basis)
-# expanding w/ try with truncated power basis
-ctpb1ext = (k[1]<xExt)*(xExt-k[1])^3
-ctpb2ext = (k[2]<xExt)*(xExt-k[2])^3
-fit8ext = predict(fit8, data.frame(x=xExt, ctpb1=ctpb1ext, ctpb2=ctpb2ext))   # knots beyond boundaries cause ill conditioned bases
-fit9ext = predict(fit9, data.frame(x=xExt))  # 
 
 plot(xExt,yExt, ylim= c(-500,500), main="Unrestricted Cubic Spline (Extrapolated)")            # B-spline & truncated power basis gives
 lines(x=xExt, y=fit9ext, col="red", lwd=3)    # same results
@@ -336,11 +365,16 @@ abline(v=k[2], lwd=3)
 legend("topleft", lwd=2, col=c("red", "blue"),
        legend=c("Truncated Power Series","B-Spline"))
 @
-  
+\caption{Data fit using Unrestricted Cubic Splines}
+\label{unrestricted_csb}
+\end{center}
+\end{figure}
+
 \subsubsection{Degrees of Freedom $df$}
 Note there are six basis functions corresponding to a model fit with six degrees of freedom. A piecewise cubic polynomial with two knots would have $(\text{4 parameters per region } (1, X, X^2, X^3) \times (\text{3 regions}) = 12 df$. Cubic splines, however, place three constraints at each knot (continuity in $f, f^{'}, \text{ and}, f^{''}$). This gives us $(\text{4 parameters per region}) \times (\text{3 regions}) - (\text{2 knots})\times (\text{3 constraints per knots}) = 6df$. So a spline uses less parameters and is less flexible than a piecewise polynomial.
   
-  %%% Natural Cubic Splines
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Natural Cubic Splines
 \subsection{Natural (Restricted) Cubic Splines}
 As seen above, the unrestricted cubic spline is poorly behaved in the tails. To address this, we can use an alternative basis for cubic splines which satisfies the ``natural" boundary condition that the second derivative vanish at the first and last knot \cite{stone1985additive, devlin1986spline} . In other words we fit a natural cubic spline basis which is linear before the first and after the last knots. 
   
@@ -359,7 +393,7 @@ For a more numerically stable basis, Harrell recommends dividing each term in \r
 \end{equation}
 This adjustment normalizes the nonlinear terms by scaling them to have units of $X$. After this adjustment, the truncated power basis will not provide any numerical issues assuming modern optimization software is used (ie QR decomposition for matrix inversion) \cite{harrell2015regression}.
   
-  Note that this is a truncated power basis, however, a B-spline basis could also be used to represent a natural cubic spline. The code below fits natural cubic splines in R. The first step is to assign {\bf boundary knots}. Up to this point, we have been working with two knots, $\xi_1$ and $\xi_2$. We now add boundary knots near the beginning and the end of the data (at 5.1 and 19.9) . So now, we technically have four knots, and our former knots $\xi_1$ and $\xi_2$ are now $\xi_2$ and $\xi_3$ and are now called {\bf internal knots}.
+  Note that this is a truncated power basis, however, a B-spline basis could also be used to represent a natural cubic spline. The code below fits natural cubic splines in R. The first step is to assign {\bf boundary knots}. Up to this point, we have been working with two knots, $\xi_1$ and $\xi_2$. We now add boundary knots near the beginning and the end of the data (at 5.1 and 19.9) . So now, we now have four knots, and our former knots $\xi_1$ and $\xi_2$ are now $\xi_2$ and $\xi_3$ and are now called {\bf internal knots}.
   
   
   <<>>=
@@ -370,7 +404,6 @@ This adjustment normalizes the nonlinear terms by scaling them to have units of 
   
   Next we fit the natural cubic spline in three ways. First, we manually define a truncated power basis in the code below. This method is general and can be used in SAS, Python, Matlab, or any other scientific computer language. 
   <<>>=
-  # MANUALLY CALCULATE NATURAL SPLINE BASIS (W/ EXPLICIT BOUNDARY KNOTS)
   naturalSplineBasis = data.frame(x=x)
   for (j in 1:(nk-2)){
   z =  (k[j]<x)*(x-k[j])^3 - ((k[nk-1]<x)*(x-k[nk-1])^3)*((k[nk]-k[j])/(k[nk]-k[nk-1]))
@@ -385,30 +418,18 @@ This adjustment normalizes the nonlinear terms by scaling them to have units of 
   <<>>=
   # all 3 Natural Splines match
   fit10 = lm(y ~ ., data=df)        # manual truncated power basis)
-  summary(fit10)$coef
+  #summary(fit10)$coef
   fit11 = lm(y ~ rcspline.eval(x, knots=k, inclx=TRUE))  # truncated power basis
   fit12 = lm(y ~ ns(x, knots=k[2:3], Boundary.knots = c(k[1], k[4])))  # B-Spline basis
   @
   
   In the right hand panel below, we extrapolate the natural (restricted) spline in \texttt{fit10} and compare it to the unrestricted spline from \texttt{fit9}. The blue line below shows the advantage of using a natural spline. While the unrestricted spline behaves badly in the tails, the natural spline is linear outside the boundary knots which generally gives some comfort when extrapolating beyond the range of the training dataset (of course, its always technically wrong to extrapolate but sometimes unavoidable).
   
-The plots below also demonstrate another feature of natural splines. They are less flexible than unrestricted splines given the same number of knots. We can see from \ref{natSplineBasis} that a natural cubic spline with $K=4$ knots has 4 degrees of freedom. A natural spline with $K$ knots (including boundary knots) will have $K$ degrees of freedom. 
+The plots in figure \ref{restricted_csb} also demonstrate another feature of natural splines. They are less flexible than unrestricted splines given the same number of knots. We can see from \ref{natSplineBasis} that a natural cubic spline with $K=4$ knots has 4 degrees of freedom. A natural spline with $K$ knots (including boundary knots) will have $K$ degrees of freedom. 
   
 In comparison the unrestricted spline with $K=2$ knots has 6 degrees of freedom. This can actually be seen as an advantage for natural splines because we can use those extra degrees of freedom to better effect by including more interior knots \cite{hastie2011elements}. In the plot below, we fit a final natural spline model using interior knots at $\xi=\{8,11,14,17\}$ resulting in a natural cubic spline model with 6 $df$.
-  
-<<test7, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
-  par(mfrow=c(1,2))
-  
-  plot(x,y)
-  lines(x=x, y=fit10$fitted, col="red", lwd=6)   # manual natrual spline (manual TPB)
-  lines(x=x, y=fit11$fitted, col="blue", lwd=2)  # rcspline.eval() -truncated power basis (TPB)
-  lines(x=x, y=fit12$fitted,col="green", lwd=1) # ns() - B-Spline
-  abline(v=k[2], lwd=3)
-  abline(v=k[3], lwd=3)
-  legend("topleft", lwd=2, col=c("red", "blue", "green"),
-  legend=c("fit10", "fit11", "fit12"))
-  
-  
+
+<<echo=FALSE>>=
   ## Natural Splines beyond range of data
   #######################################
   naturalSplineBasisExt = data.frame(x=xExt)
@@ -424,10 +445,24 @@ In comparison the unrestricted spline with $K=2$ knots has 6 degrees of freedom.
   #natural spline w/ 4 internal knots (df=6) for comparison 
   fit13 = lm(y ~ ns(x, knots=c(8,11,14,17), Boundary.knots = c(k[1], k[4])))
   fit13ext = predict(fit13, data.frame(x=xExt))  # run model on data outside range
+  @
+
+
+\begin{figure}[h]	%Figure 
+\begin{center}
+<<test7, echo=FALSE, fig.width= 10, fig.height=5, out.width='.9\\linewidth', dev='pdf'>>=
+par(mfrow=c(1,2))
   
+plot(x,y)
+  lines(x=x, y=fit10$fitted, col="red", lwd=6)   # manual natrual spline (manual TPB)
+  lines(x=x, y=fit11$fitted, col="blue", lwd=2)  # rcspline.eval() -truncated power basis (TPB)
+  lines(x=x, y=fit12$fitted,col="green", lwd=1) # ns() - B-Spline
+  abline(v=k[2], lwd=3)
+  abline(v=k[3], lwd=3)
+  legend("topleft", lwd=2, col=c("red", "blue", "green"),
+  legend=c("fit10", "fit11", "fit12"))
   
-  
-  plot(xExt,yExt, ylim= c(-400,400))            # PLOT: natural splines beyond range
+plot(xExt,yExt, ylim= c(-400,400))            # PLOT: natural splines beyond range
   lines(x=xExt, y=fit9ext, col="red", lwd=2)    # Unrestricted spline (df=6)
   lines(x=xExt, y=fit10ext, col="blue", lwd=2)  # Natural Spline (df=4)
   lines(x=xExt, y=fit13ext, col="green", lwd=2) # Natural Spline (df=6)
@@ -435,7 +470,12 @@ In comparison the unrestricted spline with $K=2$ knots has 6 degrees of freedom.
   legend=c("Unrestricted Spline (df=6)","Natural Spline (df=4)", "Natural Spline (df=6)"))
   
   @
-  
+\caption{Data fit using Restricted (Natural) Cubic Splines}
+\label{restricted_csb}
+\end{center}
+\end{figure}
+
+
   \section{Knot Placement}
   In order to use fixed-knot splines, we need to know (1) how many knots to use, and (2) where to place them. Ideally there would be some theory to guide this process. For example, if we knew a function would change curvature at some point $X=a$, we could place a knot at $a$ \cite{poirier1973piecewise, stone1985additive}. This is sometimes known as \textbf{subjective knot placement} to differentiate it from automatic knot placement. However, in most cases pre-specification is not possible \cite{harrell2015regression}. Fortunately, researchers have found that the placement of knots for restricted cubic spline models is not critical. Instead, the number of knots, $K$, has a much greater impact on the fit \cite{stone1986generalized, durrleman1989flexible}. Researchers generally recommend placing evenly spaced knots at fixed quantiles along the marginal distribution of $X$. This can help guarantee enough points in each interval and provides some protection against allowing outliers have too great of an effect on knot placement \cite{harrell2015regression, hastie2011elements,james2013introduction}. 
   
